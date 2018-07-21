@@ -2,7 +2,7 @@
 
 ## Prerequisites
 ```bash
-sudo apt install -y golang-go pxz dctrl-tools fuseiso
+sudo apt install -y golang-go bzr pxz dctrl-tools fuseiso
 ```
 
 ## Generate image with recovery

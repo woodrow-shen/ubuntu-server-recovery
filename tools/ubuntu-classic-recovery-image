@@ -20,8 +20,7 @@ else
 fi
 
 build_recovery_tool() {
-
-	git clone --depth 1 https://github.com/woodrow-shen/ubuntu-custom-recovery.git -b master $UBUNTURECOVERY
+    git clone --depth 1 https://github.com/woodrow-shen/ubuntu-custom-recovery.git -b master $UBUNTURECOVERY
     cd $UBUNTURECOVERY
 	
     export GOPATH=$WORKDIR/gocode
@@ -60,21 +59,22 @@ build_recovery_image() {
     fi
     sudo fuseiso $ORIG_ISO $ISOMNT
 
-    sudo rsync -aH $ISOMNT/ $MNT || true
+    sudo rsync -aHK $ISOMNT/ $MNT || true
 
-	# hack iso to make recovery work
-	cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
-	cp $UBUNTURECOVERY/recovery-includes/recovery/bin/recovery.bin $MNT/recovery/bin/
-	cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
-	cp -r $UBUNTURECOVERY/grub-includes/boot/* $MNT/boot/
-	# repack initramfs by adding initramfs-hook
-	mkdir initrd-tmp
-	cd initrd-tmp
-	gzip -dc $MNT/casper/initrd.gz | sudo cpio -id
-	cp $UBUNTURECOVERY/initrd-casper-hooks/scripts/casper-bottom/* usr/share/initramfs-tools/scripts/casper-bottom/
-	find . | sudo cpio -H newc -o | gzip -9 > $MNT/casper/initrd.gz	
-	cd -
-	sudo rm -rf initrd-tmp
+    # hack iso to make recovery work
+    sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
+    sudo cp $UBUNTURECOVERY/recovery-includes/recovery/bin/recovery.bin $MNT/recovery/bin/
+    sudo cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
+    sudo cp -r $UBUNTURECOVERY/grub-includes/boot/* $MNT/boot/
+    # repack initramfs by adding initramfs-hook
+    sudo mkdir initrd-tmp
+    cd initrd-tmp
+    gzip -dc $MNT/casper/initrd.gz | sudo cpio -id
+    sudo cp $UBUNTURECOVERY/initrd-casper-hooks/scripts/casper-bottom/* scripts/casper-bottom/
+    find . | sudo cpio -H newc -o | gzip -9 > ../initrd.gz
+    cd -
+    sudo cp initrd.gz $MNT/casper
+    sudo rm -rf initrd.gz initrd-tmp
 
     # update installer uuid in grub
     INSTALLER_UUID=$(sudo blkid -s UUID -o value /dev/mapper/${LOOP_IMG}p1)
@@ -100,6 +100,23 @@ build_recovery_image() {
 
     echo "[Output image: $OUTDIR/$IMAGE".xz"]"
 }
+
+cleanup() {
+    if [ $? = 0 ]; then
+        echo "[Complete]"
+        rm -rf $WORKDIR
+    else
+        echo "[Cleanup]"
+        sudo umount $ISOMNT
+        sudo umount $MNT
+        sudo kpartx -ds /dev/$LOOP_IMG
+        sudo losetup -d /dev/$LOOP_IMG
+        sudo rm -rf $ISOMNT $MNT $WORKDIR
+        sudo rm *.img
+    fi
+}
+
+trap cleanup 1 2 3 6 EXIT
 
 build_recovery_tool
 build_recovery_image
