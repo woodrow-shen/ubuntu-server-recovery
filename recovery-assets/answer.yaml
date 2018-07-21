@@ -1,0 +1,9 @@
+Identity:
+  realname: admin
+  username: admin
+  hostname: intel-nuc
+  password: '$6$nAsjKnW0mTP64Q.f$GaiC8G1EZ8msUR1X89FNTwZSwuJgRnKBr45hnIZejkPLnrCHf05/vZ4e.WIKgxcuuyB.yYR3S4ybWtEePQ0N71'
+Network:
+  - name: eno1
+    subnets:
+      - type : dhcp4

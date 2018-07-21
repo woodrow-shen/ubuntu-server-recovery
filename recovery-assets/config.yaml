@@ -1,0 +1,21 @@
+project: generic-amd64
+configs:
+  arch: amd64
+  swap: on
+  swapsize: 1024
+  bootsize: 512
+  rootfssize: -1
+  release: 18.04
+  partition-type: gpt
+  bootloader: grub
+recovery:
+  type: factory_install
+  installerfslabel: INSTALLER
+  recoverysize: 1024
+  filesystem-label: ESP
+  oem-preinst-hook-dir: OEM_pre_install_hook
+  oem-postinst-hook-dir: OEM_post_install_hook
+  oem-prereboot-hook-dir: OEM_pre_reboot_hook
+  oemlogdir: MFGMEDIA
+  oem-headless-installer-preinst-hook-dir: OEM_hi_preinst_hook
+  restore-confirm-timeout: 30

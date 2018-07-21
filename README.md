@@ -1,3 +1,15 @@
+# The tool to create Ubuntu live server image with recovery function
+
+## Prerequisites
+```bash
+sudo apt install -y golang-go pxz dctrl-tools fuseiso
+```
+
+## Generate image with recovery
+``` bash
+./tools/ubuntu-classic-recovery-image <ubuntu.iso>
+```
+
 # config for arm
 
 ## Prerequisites
