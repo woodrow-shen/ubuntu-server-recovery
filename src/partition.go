@@ -167,6 +167,25 @@ func FindTargetParts(parts *Partitions, recoveryType string) error {
 				}
 			}
 
+			// target disk might be virtual scsi disk
+			if devPath == "" {
+				blockArray, _ := filepath.Glob("/sys/block/vd*")
+				for _, block := range blockArray {
+					dat := []byte("")
+					dat, err := ioutil.ReadFile(filepath.Join(block, "dev"))
+					if err != nil {
+						return err
+					}
+					dat_str := strings.TrimSpace(string(dat))
+					blockDevice := rplib.Realpath(fmt.Sprintf("/dev/block/%s", dat_str))
+
+					if blockDevice != parts.SourceDevPath {
+						devPath = blockDevice
+						break
+					}
+				}
+			}
+
 			// target disk might be scsi disk
 			if devPath == "" {
 				blockArray, _ := filepath.Glob("/sys/block/sd*")

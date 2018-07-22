@@ -22,7 +22,7 @@ fi
 build_recovery_tool() {
     git clone --depth 1 https://github.com/woodrow-shen/ubuntu-custom-recovery.git -b master $UBUNTURECOVERY
     cd $UBUNTURECOVERY
-	
+
     export GOPATH=$WORKDIR/gocode
     export PATH="$PATH:$GOPATH/bin"
     go get launchpad.net/godeps 
@@ -71,6 +71,10 @@ build_recovery_image() {
     cd initrd-tmp
     gzip -dc $MNT/casper/initrd.gz | sudo cpio -id
     sudo cp $UBUNTURECOVERY/initrd-casper-hooks/scripts/casper-bottom/* scripts/casper-bottom/
+    sudo bash -c 'cat >> scripts/casper-bottom/ORDER << EOF
+/scripts/casper-bottom/99ubuntu_custom-recovery "\$@"
+[ -e /conf/param.conf ] && . /conf/param.conf
+EOF'
     find . | sudo cpio -H newc -o | gzip -9 > ../initrd.gz
     cd -
     sudo cp initrd.gz $MNT/casper
@@ -112,7 +116,7 @@ cleanup() {
         sudo kpartx -ds /dev/$LOOP_IMG
         sudo losetup -d /dev/$LOOP_IMG
         sudo rm -rf $ISOMNT $MNT $WORKDIR
-        sudo rm *.img
+        sudo rm -rf $TOP_DIR/initrd-tmp $TOP_DIR/*.img
     fi
 }
 
