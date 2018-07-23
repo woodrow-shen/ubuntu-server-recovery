@@ -31,7 +31,11 @@ del_old_boot_entries() {
 }
 
 rebuild_boot_entries() {
-    recovery=$(mount | grep cdrom | cut -d " " -f 1) # it would find cdrom mount
+    if [ $recoveryos = "ubuntu_classic_curtin" ]; then
+        recovery=$(mount | grep cdrom | cut -d " " -f 1 | awk 'NR==1{print $1}') # it would find cdrom mount
+    else
+        recovery=$(mount | grep cdrom | cut -d " " -f 1) # it would find cdrom mount
+    fi
     if [[ $recovery = *"mmcblk"* ]]; then
         recovery_dev=${recovery::-2}
     else
@@ -190,15 +194,6 @@ EOF
     umount $ROOTFSMNT/run
 }
 
-
-apt install -y efibootmgr
-update_grubenv
-del_old_boot_entries
-rebuild_boot_entries
-set_next_bootentry
-update_grub_menu
-install_additional_debs
-
 # Check the recovery type
 for x in $(cat /proc/cmdline); do
     case ${x} in
@@ -210,6 +205,14 @@ for x in $(cat /proc/cmdline); do
         ;;
      esac
 done
+
+apt install -y efibootmgr
+update_grubenv
+del_old_boot_entries
+rebuild_boot_entries
+set_next_bootentry
+update_grub_menu
+install_additional_debs
 
 # execute the hooks
 hookdir=$(awk -F ": " '/oem-postinst-hook-dir/{print $2 }' $RECO_MNT/recovery/config.yaml)

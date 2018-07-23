@@ -95,9 +95,7 @@ hack_ubuntu_iso() {
     apt download efibootmgr libefiboot1 libefivar1
     cd -
     sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
-    sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
     sudo cp $UBUNTURECOVERY/recovery-includes/recovery/bin/recovery.bin $MNT/recovery/bin/
-    sudo cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
     sudo cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
     sudo cp -r $UBUNTURECOVERY/grub-includes/boot/* $MNT/boot/
 
