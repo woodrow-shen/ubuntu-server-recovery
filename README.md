@@ -12,7 +12,7 @@ sudo apt install -y qemu-kvm libvirt-bin virtinst ovmf
 ```
 
 ## How to run recovery image with kvm+vnc
-### Create a VM using virt-install
+### Create a VM using virt-install as recovery installer
 ```bash
 fallocate -l 16G ubuntu-18.04.img
 cp outdir/ubuntu-server-bionic-<build-date>.img.xz .
@@ -35,6 +35,20 @@ ssh -L 5900:localhost:5900 -N -f <username>@<host-ip>
 
 ### Use VNC clinet to connect VM
 e.g. Use VNC viewer to connect 127.0.0.1:5900
+
+### Create a VM for installing Ubuntu-server
+```bash
+sudo virsh -c qemu:///system shutdown intel-nuc
+sudo virsh -c qemu:///system undefine --nvram intel-nuc
+sudo virt-install --connect qemu:///system --name intel-nuc \
+		 --disk ~/ubuntu-18.04.img,device=disk,bus=virtio \
+		 --ram 1024 \
+		 --boot uefi \
+		 --network bridge:virbr0 \
+		 --os-type=linux \
+		 --graphics vnc,port=5900,listen=0.0.0.0 \
+		 --noautoconsole
+```
 
 ### Manager current VM
 ```bash

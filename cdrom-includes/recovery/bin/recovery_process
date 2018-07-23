@@ -52,7 +52,12 @@ if [ -f /etc/default/watchdog ] && [ -f /usr/sbin/watchdog ];then
     /usr/sbin/watchdog
 fi
 
-# trigger recovery.bin 
+if [ "$recoverytype" = "factory_restore" ]; then
+    dpkg -i /cdrom/recovery/factory/debs/*.deb
+    efibootmgr
+fi
+
+# trigger recovery.bin
 /cdrom/recovery/bin/recovery.bin $recoverytype $recoverylabel ubuntu_classic_curtin 2>&1 | tee /var/log/recovery/recovery.bin.prelog
 ret=${PIPESTATUS[0]}
 if [ $ret -eq 0 ] && [ ! -f /var/log/curtin/curtin-error-logs.tar ]; then

@@ -61,24 +61,8 @@ build_recovery_image() {
 
     sudo rsync -aHK $ISOMNT/ $MNT || true
 
-    # hack iso to make recovery work
-    sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
-    sudo cp $UBUNTURECOVERY/recovery-includes/recovery/bin/recovery.bin $MNT/recovery/bin/
-    sudo cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
-    sudo cp -r $UBUNTURECOVERY/grub-includes/boot/* $MNT/boot/
-    # repack initramfs by adding initramfs-hook
-    sudo mkdir initrd-tmp
-    cd initrd-tmp
-    gzip -dc $MNT/casper/initrd.gz | sudo cpio -id
-    sudo cp $UBUNTURECOVERY/initrd-casper-hooks/scripts/casper-bottom/* scripts/casper-bottom/
-    sudo bash -c 'cat >> scripts/casper-bottom/ORDER << EOF
-/scripts/casper-bottom/99ubuntu_custom-recovery "\$@"
-[ -e /conf/param.conf ] && . /conf/param.conf
-EOF'
-    find . | sudo cpio -H newc -o | gzip -9 > ../initrd.gz
-    cd -
-    sudo cp initrd.gz $MNT/casper
-    sudo rm -rf initrd.gz initrd-tmp
+    # hack ubuntu iso
+    hack_ubuntu_iso
 
     # update installer uuid in grub
     INSTALLER_UUID=$(sudo blkid -s UUID -o value /dev/mapper/${LOOP_IMG}p1)
@@ -103,6 +87,33 @@ EOF'
     sha256sum $OUTDIR/$IMAGE".xz" > $OUTDIR/$IMAGE".xz.sha256sum"
 
     echo "[Output image: $OUTDIR/$IMAGE".xz"]"
+}
+
+hack_ubuntu_iso() {
+    # hack iso to make recovery work
+    cd $UBUNTURECOVERY/recovery-assets/factory/debs
+    apt download efibootmgr libefiboot1 libefivar1
+    cd -
+    sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
+    sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
+    sudo cp $UBUNTURECOVERY/recovery-includes/recovery/bin/recovery.bin $MNT/recovery/bin/
+    sudo cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
+    sudo cp -r $UBUNTURECOVERY/recovery-assets/* $MNT/recovery
+    sudo cp -r $UBUNTURECOVERY/grub-includes/boot/* $MNT/boot/
+
+    # repack initramfs by adding initramfs-hook
+    sudo mkdir $WORKDIR/initrd-tmp
+    cd $WORKDIR/initrd-tmp
+    gzip -dc $MNT/casper/initrd.gz | sudo cpio -id
+    sudo cp $UBUNTURECOVERY/initrd-casper-hooks/scripts/casper-bottom/* scripts/casper-bottom/
+    sudo bash -c 'cat >> scripts/casper-bottom/ORDER << EOF
+/scripts/casper-bottom/99ubuntu_custom-recovery "\$@"
+[ -e /conf/param.conf ] && . /conf/param.conf
+EOF'
+    find . | sudo cpio -H newc -o | gzip -9 > $WORKDIR/initrd.gz
+    sudo cp $WORKDIR/initrd.gz $MNT/casper
+    sudo rm -rf $WORKDIR/initrd.gz $WORKDIR/initrd-tmp
+    cd -
 }
 
 cleanup() {
