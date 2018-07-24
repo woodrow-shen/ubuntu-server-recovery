@@ -194,6 +194,30 @@ EOF
     umount $ROOTFSMNT/run
 }
 
+config_netplan() {
+    cat << EOF > $ROOTFSMNT/etc/netplan/01-netcfg.yaml
+# Default network config.
+network:
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: true
+EOF
+    mount --bind /proc $ROOTFSMNT/proc
+    mount --bind /sys $ROOTFSMNT/sys
+    mount --bind /dev $ROOTFSMNT/dev
+    mount --bind /run $ROOTFSMNT/run
+
+    chroot $ROOTFSMNT apt-get -y install netplan.io network-manager
+    chroot $ROOTFSMNT netplan generate
+    chroot $ROOTFSMNT netplan apply
+
+    umount $ROOTFSMNT/proc
+    umount $ROOTFSMNT/sys
+    umount $ROOTFSMNT/dev
+    umount $ROOTFSMNT/run
+}
+
 # Check the recovery type
 for x in $(cat /proc/cmdline); do
     case ${x} in
@@ -213,6 +237,7 @@ rebuild_boot_entries
 set_next_bootentry
 update_grub_menu
 install_additional_debs
+config_netplan
 
 # execute the hooks
 hookdir=$(awk -F ": " '/oem-postinst-hook-dir/{print $2 }' $RECO_MNT/recovery/config.yaml)
