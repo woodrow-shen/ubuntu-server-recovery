@@ -43,6 +43,7 @@ type ConfigRecovery struct {
 		SkipFactoryDiagResult      string `yaml:"skip-factory-diag-result"`
 		RestoreConfirmPrehookFile  string `yaml:"restore-confirm-prehook-file"`
 		RestoreConfirmPosthookFile string `yaml:"restore-confirm-posthook-file"`
+		RestoreConfirmPrompt       string `yaml:"restore-confirm-prompt"`
 		RestoreConfirmTimeoutSec   int64  `yaml:"restore-confirm-timeout"`
 	}
 }
