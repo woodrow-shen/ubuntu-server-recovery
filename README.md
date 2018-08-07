@@ -7,14 +7,14 @@ A tool can convert Ubuntu live server ISO to disk image with recovery, and you c
 
 ## Prerequisites
 ```bash
-sudo apt install -y golang-go bzr pxz dctrl-tools fuseiso
+sudo apt install -y golang-go bzr pxz dctrl-tools fuseiso kpartx
 ```
 
 ## Generate image with recovery
 ``` bash
 ./tools/ubuntu-classic-recovery-image <ubuntu.iso>
 ```
-Here the ISO I used can be gotten from [ubuntu-18.04-live-server-amd64.iso](http://releases.ubuntu.com/18.04/ubuntu-18.04-live-server-amd64.iso), so the above can be issued by
+Here the ISO I used can be gotten from [ubuntu-18.04-live-server-amd64.iso](http://releases.ubuntu.com/18.04/ubuntu-18.04.1-live-server-amd64.iso), so the above can be issued by
 
 ```bash
 ./tools/ubuntu-classic-recovery-image ubuntu-18.04-live-server-amd64.iso
