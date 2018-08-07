@@ -85,7 +85,14 @@ build_recovery_image() {
 hack_ubuntu_iso() {
     # hack iso to make recovery work
     cd $UBUNTURECOVERY/recovery-assets/factory/debs
-    apt download efibootmgr libefiboot1 libefivar1
+    apt download efibootmgr libefiboot1 libefivar1 \
+        binutils binutils-common binutils-x86-64-linux-gnu build-essential cpp cpp-7 \
+	dkms dpkg-dev fakeroot g++ g++-7 gcc gcc-7 gcc-7-base libalgorithm-diff-perl \
+	libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan4 libatomic1 \
+	libbinutils libc-dev-bin libc6-dev libcc1-0 libcilkrts5 libdpkg-perl \
+	libfakeroot libfile-fcntllock-perl libgcc-7-dev libgomp1 libisl19 libitm1 \
+	liblsan0 libmpc3 libmpx2 libquadmath0 libstdc++-7-dev libtsan0 libubsan0 \
+	linux-libc-dev make manpages-dev
     cd -
     sudo cp -r $UBUNTURECOVERY/cdrom-includes/recovery/ $MNT/
     sudo cp $UBUNTURECOVERY/recovery-includes/recovery/bin/recovery.bin $MNT/recovery/bin/

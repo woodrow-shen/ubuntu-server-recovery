@@ -37,3 +37,9 @@ if [ ! -z $recoverytype ] && [ $recoverytype != "headless_installer" ]; then
     fi
 fi
 
+# set ring LED
+DEB=$RECO_MNT/recovery/factory/OEM_hi_preinst_hook
+dpkg -i $DEB/intel-nuc-led-dkms_1.0_all.deb
+modprobe nuc_led
+cat /proc/acpi/nuc_led
+echo 'ring,50,blink_fast,green' | sudo tee /proc/acpi/nuc_led > /dev/null

@@ -52,8 +52,14 @@ if [ -f /etc/default/watchdog ] && [ -f /usr/sbin/watchdog ];then
     /usr/sbin/watchdog
 fi
 
+# install intel-nuc-led and set ring LED
+dpkg -i /cdrom/recovery/factory/deb/*.deb
+dpkg -i /cdrom/recovery/factory/OEM_hi_preinst_hook/intel-nuc-led-dkms_1.0_all.deb
+modprobe nuc_led
+cat /proc/acpi/nuc_led
+echo 'ring,50,blink_fast,yellow' | sudo tee /proc/acpi/nuc_led > /dev/null
+
 if [ "$recoverytype" = "factory_restore" ]; then
-    dpkg -i /cdrom/recovery/factory/debs/*.deb
     efibootmgr
 fi
 
