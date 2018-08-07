@@ -20,7 +20,7 @@ else
 fi
 
 build_recovery_tool() {
-    git clone --depth 1 https://github.com/woodrow-shen/ubuntu-server-recovery.git -b master $UBUNTURECOVERY
+    git clone --depth 1 https://github.com/woodrow-shen/ubuntu-server-recovery.git -b intel-nuc $UBUNTURECOVERY
     cd $UBUNTURECOVERY
 
     export GOPATH=$WORKDIR/gocode
