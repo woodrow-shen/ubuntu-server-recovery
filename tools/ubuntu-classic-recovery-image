@@ -12,6 +12,11 @@ UBUNTU_EDITION=ubuntu-server
 UBUNTU_VERSION=bionic
 IMG_NAME=$UBUNTU_EDITION-$UBUNTU_VERSION-$(date +"%Y%m%d")
 
+if [ -z $ORIG_ISO ]; then
+    echo "No source ISO"
+    exit 1
+fi
+
 if lsb_release -c | grep bionic ;then
     BUILD_IN_BIONIC=true
 else
