@@ -53,7 +53,7 @@ if [ -f /etc/default/watchdog ] && [ -f /usr/sbin/watchdog ];then
 fi
 
 # install intel-nuc-led and set ring LED
-dpkg -i /cdrom/recovery/factory/deb/*.deb
+dpkg -i /cdrom/recovery/factory/debs/*.deb
 /sbin/modprobe nuc_led
 cat /proc/acpi/nuc_led
 echo 'ring,50,blink_fast,yellow' | sudo tee /proc/acpi/nuc_led > /dev/null
