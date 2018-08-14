@@ -106,8 +106,9 @@ hack_ubuntu_iso() {
 
     # repack initramfs by adding initramfs-hook
     sudo mkdir $WORKDIR/initrd-tmp
+    dd if=$MNT/casper/initrd of=$WORKDIR/initrd.img bs=512 skip=48
     cd $WORKDIR/initrd-tmp
-    gzip -dc $MNT/casper/initrd.gz | sudo cpio -id
+    zcat $WORKDIR/initrd.img | sudo cpio -id
     sudo cp $UBUNTURECOVERY/initrd-casper-hooks/scripts/casper-bottom/* scripts/casper-bottom/
     sudo bash -c 'cat >> scripts/casper-bottom/ORDER << EOF
 /scripts/casper-bottom/99ubuntu_custom-recovery "\$@"
