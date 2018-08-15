@@ -19,4 +19,4 @@ recovery:
   oemlogdir: MFGMEDIA
   oem-headless-installer-preinst-hook-dir: OEM_hi_preinst_hook
   restore-confirm-timeout: 30
-  restore-confirm-prompt: on
+  restore-confirm-prompt: off
