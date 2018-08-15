@@ -36,7 +36,7 @@ rebuild_boot_entries() {
     else
         recovery=$(mount | grep cdrom | cut -d " " -f 1) # it would find cdrom mount
     fi
-    if [[ $recovery = *"mmcblk"* ]]; then
+    if [[ $recovery = *"mmcblk"* ]] || [[ $recovery = *"nvme"* ]]; then
         recovery_dev=${recovery::-2}
     else
         recovery_dev=${recovery::-1}
@@ -45,8 +45,12 @@ rebuild_boot_entries() {
     recovery_part=${recovery: -1}
     efibootmgr -c -d $recovery_dev -p $recovery_part -l "\\EFI\\BOOT\\BOOTX64.EFI" -L $RECOVERY_ENTRY
 
-    boot=$(mount | grep boot | cut -d " " -f 1)  # it would find boot/efi mount
-    if [[ $boot = *"mmcblk"* ]]; then
+    if [ $recoveryos = "ubuntu_classic_curtin" ]; then
+        boot=$(mount | grep boot | cut -d " " -f 1 | awk 'NR==1{print $1}')  # it would find boot/efi mount
+    else
+        boot=$(mount | grep boot | cut -d " " -f 1)  # it would find boot/efi mount
+    fi
+    if [[ $boot = *"mmcblk"* ]] || [[ $boot = *"nvme"* ]]; then
         boot_dev=${boot::-2}
     else
         boot_dev=${boot::-1}

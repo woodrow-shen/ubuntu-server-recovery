@@ -42,4 +42,4 @@ DEB=$RECO_MNT/recovery/factory/debs
 dpkg -i $DEB/intel-nuc-led-dkms_1.0_all.deb
 modprobe nuc_led
 cat /proc/acpi/nuc_led
-echo 'ring,50,blink_fast,green' | sudo tee /proc/acpi/nuc_led > /dev/null
+echo 'ring,50,none,green' | sudo tee /proc/acpi/nuc_led > /dev/null
